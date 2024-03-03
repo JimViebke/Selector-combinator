@@ -94,25 +94,15 @@ end
 local function on_gui_opened(event)
     local entity = event.entity
 
-    if not entity then
-        return
-    end
-
-    if not entity.valid then
-        return
-    end
-
-    if entity.name ~= "selector-combinator" then
+    if not entity or not entity.valid or entity.name ~= "selector-combinator" then
         return
     end
 
     local player = game.get_player(event.player_index)
 
-    if not player then
-        return
+    if player then
+        SelectorGui.on_gui_added(player, entity)
     end
-
-    SelectorGui.on_gui_added(player, entity)
 end
 
 local function on_gui_closed(event)
@@ -157,19 +147,5 @@ script.on_event(defines.events.on_gui_closed, on_gui_closed)
 script.on_event(defines.events.on_tick, function()
     for _, selector in pairs(global.selector_combinators) do
         selector:on_tick()
-    end
-end)
-
--- Put every player that joins into editor mode
-script.on_event(defines.events.on_player_created, function(event)
-    local player = game.get_player(event.player_index)
-    player.cheat_mode = true
-
-    if not player then
-        return
-    end
-
-    for _, tech in pairs(player.force.technologies) do
-        tech.researched = true
     end
 end)
