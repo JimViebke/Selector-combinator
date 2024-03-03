@@ -69,6 +69,17 @@ local function write_signals(entry, gui)
     selection_signal_guis.quality_target.elem_value = entry.settings.quality_target_signal
 end
 
+---@param gui LuaGuiElement
+---@return Selector?
+local function find_selector_entry_by_gui_element(gui)
+    local selector_id = gui.tags.selector_id
+    if not selector_id or type(selector_id) ~= "number" then
+        return
+    end
+
+    return global.selector_combinators[selector_id]
+end
+
 function SelectorGui.on_gui_added(player, entity)
     local screen = player.gui.screen
 
@@ -446,8 +457,7 @@ function SelectorGui.on_gui_added(player, entity)
 
     quality_target_signal_label.style.left_margin = 8
 
-    local entry = global.selector_combinators[entity.unit_number]
-
+    local entry = SelectorRuntime.find_selector_entry_by_unit_number(entity.unit_number)
     if entry then
         write_radio_buttons(entry, gui)
         write_text_boxes(entry, gui)
@@ -493,25 +503,16 @@ function SelectorGui.bind_all_events()
 
     script.on_event(defines.events.on_gui_checked_state_changed, function(eventData)
         local player = game.get_player(eventData.player_index)
-
         if not player then
             return
         end
 
         local gui = player.gui.screen.selector_gui
-
         if not gui then
             return
         end
 
-        local selector_id = gui.tags.selector_id
-
-        if not selector_id then
-            return
-        end
-
-        local selector_entry = global.selector_combinators[selector_id]
-
+        local selector_entry = find_selector_entry_by_gui_element(gui)
         if not selector_entry then
             return
         end
@@ -537,23 +538,23 @@ function SelectorGui.bind_all_events()
         end
 
         if element == radio_buttons.select_index then
-            selector_entry.settings.mode = "index"
+            selector_entry.settings.mode = SelectorMode.index
         end
 
         if element == radio_buttons.count_inputs then
-            selector_entry.settings.mode = "count_inputs"
+            selector_entry.settings.mode = SelectorMode.count_inputs
         end
 
         if element == radio_buttons.random_input then
-            selector_entry.settings.mode = "random_input"
+            selector_entry.settings.mode = SelectorMode.random_input
         end
 
         if element == radio_buttons.stack_size then
-            selector_entry.settings.mode = "stack_size"
+            selector_entry.settings.mode = SelectorMode.stack_size
         end
 
         if element == radio_buttons.quality_transfer then
-            selector_entry.settings.mode = "quality_transfer"
+            selector_entry.settings.mode = SelectorMode.quality_transfer
         end
 
         if find(radio_buttons, element) then
@@ -576,14 +577,7 @@ function SelectorGui.bind_all_events()
             return
         end
 
-        local selector_id = gui.tags.selector_id
-
-        if not selector_id then
-            return
-        end
-
-        local selector_entry = global.selector_combinators[selector_id]
-
+        local selector_entry = find_selector_entry_by_gui_element(gui)
         if not selector_entry then
             return
         end
@@ -604,8 +598,11 @@ function SelectorGui.bind_all_events()
             if is_logic_signal(signal) then
                 eventData.element.elem_value = nil
                 signal = nil
-            end        
-            selector_entry.settings.index_signal = signal
+            end
+
+            if signal then
+                selector_entry.settings.index_signal = signal
+            end
         end
 
         if eventData.element == selection_signal_guis.count_inputs then
@@ -636,19 +633,11 @@ function SelectorGui.bind_all_events()
         end
 
         local gui = player.gui.screen.selector_gui
-
         if not gui then
             return
         end
 
-        local selector_id = gui.tags.selector_id
-
-        if not selector_id then
-            return
-        end
-
-        local selector_entry = global.selector_combinators[selector_id]
-
+        local selector_entry = find_selector_entry_by_gui_element(gui)
         if not selector_entry then
             return
         end
@@ -683,14 +672,7 @@ function SelectorGui.bind_all_events()
             return
         end
 
-        local selector_id = gui.tags.selector_id
-
-        if not selector_id then
-            return
-        end
-
-        local selector_entry = global.selector_combinators[selector_id]
-
+        local selector_entry = find_selector_entry_by_gui_element(gui)
         if not selector_entry then
             return
         end
