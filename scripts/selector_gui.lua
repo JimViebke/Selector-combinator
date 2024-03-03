@@ -538,23 +538,23 @@ function SelectorGui.bind_all_events()
         end
 
         if element == radio_buttons.select_index then
-            selector_entry.settings.mode = "index"
+            selector_entry.settings.mode = SelectorMode.index
         end
 
         if element == radio_buttons.count_inputs then
-            selector_entry.settings.mode = "count_inputs"
+            selector_entry.settings.mode = SelectorMode.count_inputs
         end
 
         if element == radio_buttons.random_input then
-            selector_entry.settings.mode = "random_input"
+            selector_entry.settings.mode = SelectorMode.random_input
         end
 
         if element == radio_buttons.stack_size then
-            selector_entry.settings.mode = "stack_size"
+            selector_entry.settings.mode = SelectorMode.stack_size
         end
 
         if element == radio_buttons.quality_transfer then
-            selector_entry.settings.mode = "quality_transfer"
+            selector_entry.settings.mode = SelectorMode.quality_transfer
         end
 
         if find(radio_buttons, element) then

@@ -8,19 +8,19 @@ function SelectorAppearance.update_combinator_appearance(selector)
     local cb = selector.input_entity.get_or_create_control_behavior()
     local parameters = cb.parameters
 
-    if mode == "index" then
+    if mode == SelectorMode.index then
         if selector.settings.index_order == "ascending" then
             parameters.operation = "/"
         else
             parameters.operation = "*"
         end
-    elseif mode == "count_inputs" then
+    elseif mode == SelectorMode.count_inputs then
         parameters.operation = "-"
-    elseif mode == "random_input" then
+    elseif mode == SelectorMode.random_input then
         parameters.operation = "+"
-    elseif mode == "stack_size" then
+    elseif mode == SelectorMode.stack_size then
         parameters.operation = "%"
-    elseif mode == "quality_transfer" then
+    elseif mode == SelectorMode.quality_transfer then
         parameters.operation = "%"
     end
     

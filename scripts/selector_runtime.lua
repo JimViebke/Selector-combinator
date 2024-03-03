@@ -10,22 +10,6 @@ local QualityTransferMode = require("scripts.on_tick.quality_transfer_mode")
 ---@class SelectorRuntime
 local SelectorRuntime = {}
 
--- [ mode ]
--- "index"
--- - sort the input signals in ascending or descending order, then output the signal at the specified index
-
--- "count_inputs"
--- - count the number of input signals, then output the result
-
--- "random_input"
--- - output a randomly selected signal from among the inputs
-
--- "stack_size"
--- - output the stack sizes of the input signals
-
--- "quality_transfer"
--- - transfer the quality of an input signal to the output signal(s)
-
 ---@class Selector
 ---@field settings SelectorSettings
 ---@field input_entity LuaEntity
@@ -36,7 +20,7 @@ local SelectorRuntime = {}
 
 
 ---@class SelectorSettings
----@field mode string
+---@field mode SelectorMode
 ---@field index_order string
 ---@field index_constant number
 ---@field index_signal SignalID|string?
@@ -106,7 +90,7 @@ function SelectorRuntime.add_combinator(event)
     ---@type Selector
     local selector = {
         settings = {
-            mode = "index",
+            mode = SelectorMode.index,
 
             index_order = "descending",
             index_constant = 0,
@@ -162,7 +146,7 @@ function SelectorRuntime.clear_caches_and_force_update(selector)
     selector.control_behavior.parameters = nil
 
     -- 2. Detect the mode, set our cached on_tick hander, and create the caches we need
-    if selector.settings.mode == "index" then
+    if selector.settings.mode == SelectorMode.index then
         selector.on_tick = IndexMode.on_tick
 
         selector.cache.old_inputs = {}
@@ -173,7 +157,7 @@ function SelectorRuntime.clear_caches_and_force_update(selector)
             selector.cache.sort = function(a, b) return a.count > b.count end
         end
 
-    elseif selector.settings.mode == "count_inputs" then
+    elseif selector.settings.mode == SelectorMode.count_inputs then
         selector.on_tick = CountInputsMode.on_tick
 
         selector.cache.input_count = 0
@@ -186,15 +170,15 @@ function SelectorRuntime.clear_caches_and_force_update(selector)
             }}
         end
 
-    elseif selector.settings.mode == "random_input" then
+    elseif selector.settings.mode == SelectorMode.random_input then
         selector.on_tick = RandomInputMode.on_tick
 
-    elseif selector.settings.mode == "stack_size" then
+    elseif selector.settings.mode == SelectorMode.stack_size then
         selector.on_tick = StackSizeMode.on_tick
 
         selector.cache.old_inputs = {}
 
-    elseif selector.settings.mode == "quality_transfer" then
+    elseif selector.settings.mode == SelectorMode.quality_transfer then
         selector.on_tick = QualityTransferMode.on_tick
 
     else
