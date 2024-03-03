@@ -1,7 +1,10 @@
 local SelectorAppearance = {}
 
+---@param selector Selector
 function SelectorAppearance.update_combinator_appearance(selector)
     local mode = selector.settings.mode
+
+    ---@class LuaControlBehavior
     local cb = selector.input_entity.get_or_create_control_behavior()
     local parameters = cb.parameters
 
