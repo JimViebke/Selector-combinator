@@ -620,10 +620,7 @@ function SelectorGui.bind_all_events()
                 eventData.element.elem_value = nil
                 signal = nil
             end
-
-            if signal then
-                selector_entry.settings.index_signal = signal
-            end
+            selector_entry.settings.index_signal = signal
         end
 
         if eventData.element == selection_signal_guis.count_inputs then
