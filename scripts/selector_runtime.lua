@@ -180,12 +180,18 @@ end
 -- By doing this work only when settings change, we minimize the work required in each on_tick.
 ---@param selector Selector
 function SelectorRuntime.clear_caches_and_force_update(selector)
-    -- 1. Reset cache and output
+    -- Reset cache and output
     selector.on_tick = nil
     selector.cache = {}
     selector.control_behavior.parameters = nil
 
-    -- 2. Detect the mode and create the caches we need
+    -- Clear quality signals if Janky Quality is not installed
+    if not game.active_mods[Mods.janky_quality] then
+        settings.quality_selection_signal = nil
+        settings.quality_target_signal = nil
+    end
+
+    -- Detect the mode and create the caches we need
     if selector.settings.mode == SelectorMode.index then
         selector.cache.old_inputs = {}
 
@@ -210,10 +216,10 @@ function SelectorRuntime.clear_caches_and_force_update(selector)
         selector.cache.old_inputs = {}
     end
 
-    -- 3. Set this selector's tick function based on its mode
+    -- Set this selector's tick function based on its mode
     set_on_tick_function(selector)
 
-    -- 4. Update this combinator
+    -- Update this combinator
     selector:on_tick()
 end
 

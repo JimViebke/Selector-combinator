@@ -35,6 +35,8 @@ local function first_suffix_of(red_network, green_network, stripped_name, signal
 end
 
 function QualityTransferMode:on_tick()
+    if not game.active_mods[Mods.janky_quality_name] then return end
+
     local settings = self.settings
     local mode = settings.mode
 
@@ -65,6 +67,8 @@ function QualityTransferMode:on_tick()
         return
     end
 
+    -- Get the base signal name of the selection and target signals. ie "iron-gear-wheel-quality-4" ==> "iron-gear-wheel"
+    -- We never actually use the qualities of the input signals, so we could just change the input signal whenever it's entered in the GUI.
     local selection_name_stripped = without_quality_suffix(quality_selection_signal.name)
     local target_name_stripped = without_quality_suffix(quality_target_signal.name)
 
@@ -73,6 +77,10 @@ function QualityTransferMode:on_tick()
     local green_network = self.input_entity.get_circuit_network(defines.wire_type.green,
         defines.circuit_connector_id.combinator_input)
 
+    -- Find the lowest quality input of the selection signal. ie:
+    -- for each quality in ["", "-quality-2", "-quality-3", ...]:
+    --     if base_signal_name .. quality is present:
+    --          return quality
     local selection_suffix = first_suffix_of(red_network, green_network, selection_name_stripped,
         quality_selection_signal.type)
 
@@ -125,6 +133,8 @@ function QualityTransferMode:on_tick()
     else
         local total_of_input = 0
 
+        -- Find the total input count of the target signal, for all input qualities of the signal.
+        -- ie, if we have 200 of "stone-wall", 300 of "stone-wall-quality-2", and 100 of "stone-wall-quality-5", total_of_input = 600.
         for _, prefix in ipairs(suffixes) do
             local search_signal = {
                 name = target_name_stripped .. prefix,
@@ -140,6 +150,7 @@ function QualityTransferMode:on_tick()
         if total_of_input == 0 then
             self.control_behavior.parameters = nil
         else
+            -- Output the sum of the target signal, with the lowest quality of the selection signal.
             local signal = {
                 name = target_name_stripped .. selection_suffix,
                 type = quality_target_signal.type,
