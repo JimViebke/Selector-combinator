@@ -18,7 +18,7 @@ function CountInputsMode:on_tick()
     end
 
     cache.previous_input_was_nil = false
-    
+
     -- if our number of inputs has changed, and we have a configured signal, update the count in our cache, then output
     if #input_signals ~= cache.input_count and settings.count_signal then
         cache.input_count = #input_signals

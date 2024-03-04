@@ -23,10 +23,9 @@ function SelectorAppearance.update_combinator_appearance(selector)
     elseif mode == SelectorMode.quality_transfer then
         parameters.operation = "%"
     end
-    
+
     -- All of parameters must be written back, not just particular fields.
     cb.parameters = parameters
-
 end
 
 return SelectorAppearance

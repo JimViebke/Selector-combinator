@@ -11,3 +11,8 @@ SelectorMode = {
   ---transfer the quality of an input signal to the output signal(s)
   quality_transfer = "quality_transfer",
 }
+
+Constants = {
+  combinator_name = "selector-combinator",
+  combinator_output_name = "selector-out-combinator",
+}

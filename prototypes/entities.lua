@@ -6,13 +6,14 @@ local COMBINATOR_HR_SPRITE = "__selector-combinator__/graphics/hr-selector-combi
 local COMBINATOR_SHADOW = "__base__/graphics/entity/combinator/arithmetic-combinator-shadow.png"
 local COMBINATOR_HR_SHADOW = "__base__/graphics/entity/combinator/hr-arithmetic-combinator-shadow.png"
 
-local selector_entity = dataUtil.copy_prototype(data.raw["arithmetic-combinator"]["arithmetic-combinator"], "selector-combinator")
+local selector_entity = dataUtil.copy_prototype(data.raw["arithmetic-combinator"]["arithmetic-combinator"],
+    Constants.combinator_name)
 selector_entity.icon = "__selector-combinator__/graphics/selector-combinator-icon.png"
 
 local function combinator_sprite(x, hr_x)
-    return  {
+    return {
         filename = COMBINATOR_SPRITE,
-        priority="high",
+        priority = "high",
 
         x = x,
         y = 0,
@@ -24,7 +25,7 @@ local function combinator_sprite(x, hr_x)
         shift = { 0.03125, 0.25 },
         scale = 1,
 
-        hr_version={
+        hr_version = {
             filename = COMBINATOR_HR_SPRITE,
             priority = "high",
 
@@ -101,7 +102,7 @@ selector_entity.sprites = {
 }
 
 local function combinator_display_direction(x, y, shift)
-	return {
+    return {
         filename = "__selector-combinator__/graphics/selector-displays.png",
 
         x = x,
@@ -126,7 +127,7 @@ local function combinator_display_direction(x, y, shift)
 
             draw_as_glow = true,
         }
-	}
+    }
 end
 
 local function combinator_display(x, y, verticalShift, horizontalShift)
@@ -134,8 +135,8 @@ local function combinator_display(x, y, verticalShift, horizontalShift)
         north = combinator_display_direction(x, y, verticalShift),
         south = combinator_display_direction(x, y, verticalShift),
 
-        east = combinator_display_direction(x , y, horizontalShift),
-        west = combinator_display_direction(x , y , horizontalShift),
+        east = combinator_display_direction(x, y, horizontalShift),
+        west = combinator_display_direction(x, y, horizontalShift),
     }
 end
 
@@ -148,7 +149,8 @@ selector_entity.plus_symbol_sprites = combinator_display(0, 0, vertical_shift, h
 selector_entity.minus_symbol_sprites = combinator_display(45, 0, vertical_shift, horizontal_shift)
 selector_entity.modulo_symbol_sprites = combinator_display(60, 0, vertical_shift, horizontal_shift)
 
-local selector_out_entity = dataUtil.copy_prototype(data.raw["constant-combinator"]["constant-combinator"], "selector-out-combinator")
+local selector_out_entity = dataUtil.copy_prototype(data.raw["constant-combinator"]["constant-combinator"],
+    Constants.combinator_output_name)
 selector_out_entity.icon = nil
 selector_out_entity.icon_size = nil
 selector_out_entity.icon_mipmaps = nil
@@ -159,7 +161,7 @@ selector_out_entity.collision_box = nil
 selector_out_entity.collision_mask = {}
 selector_out_entity.item_slot_count = 500
 selector_out_entity.circuit_wire_max_distance = 3
-selector_out_entity.flags = {"not-blueprintable", "not-deconstructable", "placeable-off-grid"}
+selector_out_entity.flags = { "not-blueprintable", "not-deconstructable", "placeable-off-grid" }
 
 local origin = { 0, 0 }
 

@@ -28,18 +28,18 @@ function RandomInputMode:on_tick()
     if n_input_signals > 1 then
         signal = input_signals[global.rng(n_input_signals)]
     else
-       signal = input_signals[1]
+        signal = input_signals[1]
     end
 
     -- Determine if we actually need to update our output
     if signal.count ~= cache.old_output_count or signal.signal.name ~= cache.old_output_name then
         cache.old_output_name = signal.signal.name
         cache.old_output_count = signal.count
-        self.control_behavior.parameters = {{
+        self.control_behavior.parameters = { {
             signal = signal.signal,
             count = signal.count,
             index = 1
-        }}
+        } }
     end
 end
 

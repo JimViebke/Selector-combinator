@@ -29,7 +29,7 @@ function IndexMode:on_tick()
     if n_input_signals == #old_inputs then
         local inputs_match = true
 
-        for i=1, n_input_signals do
+        for i = 1, n_input_signals do
             local new_sig = input_signals[i]
             local old_sig = old_inputs[i]
             if new_sig.count ~= old_sig.count or new_sig.signal.name ~= old_sig.signal.name then
@@ -44,7 +44,7 @@ function IndexMode:on_tick()
         -- the input count mismatches, update the cache
         cache.old_inputs = {}
         local old_inputs = cache.old_inputs
-        for i=1, n_input_signals do
+        for i = 1, n_input_signals do
             old_inputs[i] = input_signals[i]
         end
     end
@@ -104,11 +104,11 @@ function IndexMode:on_tick()
     if cache.old_output_count ~= signal.count or cache.old_output_name ~= signal.signal.name then
         cache.old_output_name = signal.signal.name
         cache.old_output_count = signal.count
-        self.control_behavior.parameters = {{
+        self.control_behavior.parameters = { {
             signal = signal.signal,
             count = signal.count,
             index = 1
-        }}
+        } }
     end
 end
 
