@@ -31,15 +31,23 @@ local function write_radio_buttons(entry, gui)
         index = options_flow.select_index_button_flow.select_index_button,
         count_inputs = options_flow.count_inputs_button_flow.count_inputs_button,
         random_input = options_flow.random_input_button_flow.random_input_button,
-        stack_size = options_flow.stack_size_button_flow.stack_size_button,
-        quality_transfer = options_flow.quality_transfer_button_flow.quality_transfer_button,
+        stack_size = options_flow.stack_size_button_flow.stack_size_button
     }
+    
+    if game.active_mods[Mods.janky_quality_name] then
+        radio_buttons.quality_transfer = options_flow.quality_transfer_button_flow.quality_transfer_button
+    end
 
     for _, button in pairs(radio_buttons) do
         button.state = false
     end
 
-    radio_buttons[entry.settings.mode].state = true
+    -- If a mod is removed, it is possible for the mode to no longer have a corresponding button.
+    -- Handle this without changing to a new mode or selecting a new button.
+    local button = radio_buttons[entry.settings.mode]
+    if button then
+        button.state = true
+    end
 end
 
 local function write_switches(entry, gui)
@@ -59,15 +67,19 @@ local function write_signals(entry, gui)
 
     local selection_signal_guis = {
         select_index = options_flow.select_index_control_flow.select_index_select_flow.select_index_signal,
-        count_inputs = options_flow.count_inputs_signal,
-        quality_selection = options_flow.quality_selection_signal_flow.quality_selection_signal,
-        quality_target = options_flow.quality_target_signal_flow.quality_target_signal,
+        count_inputs = options_flow.count_inputs_signal
     }
 
     selection_signal_guis.select_index.elem_value = entry.settings.index_signal
     selection_signal_guis.count_inputs.elem_value = entry.settings.count_signal
-    selection_signal_guis.quality_selection.elem_value = entry.settings.quality_selection_signal
-    selection_signal_guis.quality_target.elem_value = entry.settings.quality_target_signal
+
+    if game.active_mods[Mods.janky_quality_name] then
+        selection_signal_guis.quality_selection = options_flow.quality_selection_signal_flow.quality_selection_signal
+        selection_signal_guis.quality_target = options_flow.quality_target_signal_flow.quality_target_signal
+
+        selection_signal_guis.quality_selection.elem_value = entry.settings.quality_selection_signal
+        selection_signal_guis.quality_target.elem_value = entry.settings.quality_target_signal
+    end
 end
 
 ---@param gui LuaGuiElement
@@ -153,7 +165,7 @@ function SelectorGui.on_gui_added(player, entity)
     local status_image = indicator.add {
         type = "sprite",
         name = "indicator_sprite",
-        sprite = "utility/status_not_working",
+        sprite = "utility/status_working",
         style = "status_image",
     }
 
@@ -382,81 +394,83 @@ function SelectorGui.on_gui_added(player, entity)
     stack_size_button.style.font_color = { 255, 230, 192 }
     stack_size_button.style.font = "heading-3"
 
-    local line_4 = options_flow.add {
-        type = "line",
-        style = "line",
-    }
-
-    line_4.style.top_padding = 4
-    line_4.style.bottom_padding = 4
-
     -- Quality Transfer
-    local quality_transfer_button_flow = options_flow.add {
+    if game.active_mods[Mods.janky_quality_name] then
+        local line_4 = options_flow.add {
+            type = "line",
+            style = "line",
+        }
+
+        line_4.style.top_padding = 4
+        line_4.style.bottom_padding = 4
+
+        local quality_transfer_button_flow = options_flow.add {
         type = "flow",
         name = "quality_transfer_button_flow",
         direction = "horizontal",
-    }
+        }
 
-    quality_transfer_button_flow.style.top_padding = 4
+        quality_transfer_button_flow.style.top_padding = 4
 
-    local quality_transfer_button = quality_transfer_button_flow.add {
-        type = "radiobutton",
-        name = "quality_transfer_button",
-        state = false,
-        caption = { "", { "selector-gui.quality-transfer" }, " [img=info]" },
-        tooltip = { "selector-gui.quality-transfer-tooltip" },
-    }
+        local quality_transfer_button = quality_transfer_button_flow.add {
+            type = "radiobutton",
+            name = "quality_transfer_button",
+            state = false,
+            caption = { "", { "selector-gui.quality-transfer" }, " [img=info]" },
+            tooltip = { "selector-gui.quality-transfer-tooltip" },
+        }
 
-    quality_transfer_button.style.font_color = { 255, 230, 192 }
-    quality_transfer_button.style.font = "heading-3"
+        quality_transfer_button.style.font_color = { 255, 230, 192 }
+        quality_transfer_button.style.font = "heading-3"
 
-    local quality_selection_signal_flow = options_flow.add {
-        type = "flow",
-        name = "quality_selection_signal_flow",
-        direction = "horizontal",
-    }
+        local quality_selection_signal_flow = options_flow.add {
+            type = "flow",
+            name = "quality_selection_signal_flow",
+            direction = "horizontal",
+        }
 
-    quality_selection_signal_flow.style.vertical_align = "center"
+        quality_selection_signal_flow.style.vertical_align = "center"
 
-    local quality_selection_signal = quality_selection_signal_flow.add {
-        type = "choose-elem-button",
-        name = "quality_selection_signal",
-        style = "slot_button_in_shallow_frame",
-        elem_type = "signal",
-        signal = { type = "virtual", name = nil },
-    }
+        local quality_selection_signal = quality_selection_signal_flow.add {
+            type = "choose-elem-button",
+            name = "quality_selection_signal",
+            style = "slot_button_in_shallow_frame",
+            elem_type = "signal",
+            signal = { type = "virtual", name = nil },
+        }
 
-    local quality_selection_signal_label = quality_selection_signal_flow.add {
-        type = "label",
-        name = "quality_selection_signal_label",
-        caption = { "selector-gui.quality-selection-signal" },
-    }
+        local quality_selection_signal_label = quality_selection_signal_flow.add {
+            type = "label",
+            name = "quality_selection_signal_label",
+            caption = { "selector-gui.quality-selection-signal" },
+        }
 
-    quality_selection_signal_label.style.left_margin = 8
+        quality_selection_signal_label.style.left_margin = 8
 
-    local quality_target_signal_flow = options_flow.add {
-        type = "flow",
-        name = "quality_target_signal_flow",
-        direction = "horizontal",
-    }
+        local quality_target_signal_flow = options_flow.add {
+            type = "flow",
+            name = "quality_target_signal_flow",
+            direction = "horizontal",
+        }
 
-    quality_target_signal_flow.style.vertical_align = "center"
+        quality_target_signal_flow.style.vertical_align = "center"
 
-    local quality_target_signal = quality_target_signal_flow.add {
-        type = "choose-elem-button",
-        name = "quality_target_signal",
-        style = "slot_button_in_shallow_frame",
-        elem_type = "signal",
-        signal = { type = "virtual", name = nil },
-    }
+        local quality_target_signal = quality_target_signal_flow.add {
+            type = "choose-elem-button",
+            name = "quality_target_signal",
+            style = "slot_button_in_shallow_frame",
+            elem_type = "signal",
+            signal = { type = "virtual", name = nil },
+        }
 
-    local quality_target_signal_label = quality_target_signal_flow.add {
-        type = "label",
-        name = "quality_target_signal_label",
-        caption = { "selector-gui.quality-target-signal" },
-    }
+        local quality_target_signal_label = quality_target_signal_flow.add {
+            type = "label",
+            name = "quality_target_signal_label",
+            caption = { "selector-gui.quality-target-signal" },
+        }
 
-    quality_target_signal_label.style.left_margin = 8
+        quality_target_signal_label.style.left_margin = 8
+    end
 
     local entry = SelectorRuntime.find_selector_entry_by_unit_number(entity.unit_number)
     if entry then
@@ -524,9 +538,12 @@ function SelectorGui.bind_all_events()
             select_index = options_flow.select_index_button_flow.select_index_button,
             count_inputs = options_flow.count_inputs_button_flow.count_inputs_button,
             random_input = options_flow.random_input_button_flow.random_input_button,
-            stack_size = options_flow.stack_size_button_flow.stack_size_button,
-            quality_transfer = options_flow.quality_transfer_button_flow.quality_transfer_button,
+            stack_size = options_flow.stack_size_button_flow.stack_size_button
         }
+
+        if game.active_mods[Mods.janky_quality_name] then
+            radio_buttons.quality_transfer = options_flow.quality_transfer_button_flow.quality_transfer_button
+        end
 
         local element = eventData.element
 
@@ -554,7 +571,7 @@ function SelectorGui.bind_all_events()
             selector_entry.settings.mode = SelectorMode.stack_size
         end
 
-        if element == radio_buttons.quality_transfer then
+        if element == radio_buttons.quality_transfer and game.active_mods[Mods.janky_quality_name] then
             selector_entry.settings.mode = SelectorMode.quality_transfer
         end
 
@@ -587,10 +604,13 @@ function SelectorGui.bind_all_events()
 
         local selection_signal_guis = {
             select_index = options_flow.select_index_control_flow.select_index_select_flow.select_index_signal,
-            count_inputs = options_flow.count_inputs_signal,
-            quality_selection = options_flow.quality_selection_signal_flow.quality_selection_signal,
-            quality_target = options_flow.quality_target_signal_flow.quality_target_signal,
+            count_inputs = options_flow.count_inputs_signal
         }
+
+        if game.active_mods[Mods.janky_quality_name] then
+            quality_selection = options_flow.quality_selection_signal_flow.quality_selection_signal
+            quality_target = options_flow.quality_target_signal_flow.quality_target_signal
+        end
 
         local element = eventData.element
 
@@ -615,12 +635,14 @@ function SelectorGui.bind_all_events()
             selector_entry.settings.count_signal = signal
         end
 
-        if eventData.element == selection_signal_guis.quality_selection then
-            selector_entry.settings.quality_selection_signal = eventData.element.elem_value
-        end
+        if game.active_mods[Mods.janky_quality_name] then
+            if eventData.element == selection_signal_guis.quality_selection then
+                selector_entry.settings.quality_selection_signal = eventData.element.elem_value
+            end
 
-        if eventData.element == selection_signal_guis.quality_target then
-            selector_entry.settings.quality_target_signal = eventData.element.elem_value
+            if eventData.element == selection_signal_guis.quality_target then
+                selector_entry.settings.quality_target_signal = eventData.element.elem_value
+            end
         end
 
         SelectorRuntime.clear_caches_and_force_update(selector_entry)

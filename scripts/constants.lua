@@ -16,3 +16,7 @@ Constants = {
   combinator_name = "selector-combinator",
   combinator_output_name = "selector-out-combinator",
 }
+
+Mods = {
+	janky_quality_name = "janky-quality"
+}
