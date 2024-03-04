@@ -1,3 +1,4 @@
+require("__selector-combinator__/scripts/constants")
 require("__selector-combinator__/prototypes/items")
 require("__selector-combinator__/prototypes/entities")
 require("__selector-combinator__/prototypes/recipes")

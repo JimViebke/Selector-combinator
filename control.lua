@@ -1,3 +1,4 @@
+require("__selector-combinator__/scripts/constants")
 local util = require("__core__/lualib/util")
 local SelectorAppearance = require("scripts.selector_appearance")
 local SelectorGui = require("scripts.selector_gui")

@@ -1,5 +1,4 @@
 local SelectorAppearance = require("scripts.selector_appearance")
-require("scripts.selector")
 
 -- Get the different implementations of on_tick
 local IndexMode = require("scripts.on_tick.index_mode")
