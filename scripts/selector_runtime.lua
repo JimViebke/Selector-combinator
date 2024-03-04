@@ -1,4 +1,5 @@
 local SelectorAppearance = require("scripts.selector_appearance")
+require("scripts.selector")
 
 -- Get the different implementations of on_tick
 local IndexMode = require("scripts.on_tick.index_mode")
@@ -97,7 +98,7 @@ function SelectorRuntime.add_combinator(event)
             index_signal = nil,
 
             count_signal = nil,
-            
+
             interval = 0,
 
             quality_selection_signal = nil,
@@ -135,6 +136,45 @@ function SelectorRuntime.remove_combinator(unit_number)
     end
 end
 
+-- Have a Selector set its on_tick function based on its mode
+---@param selector Selector
+local function set_on_tick_function(selector)
+    local mode = selector.settings.mode
+
+    if mode == SelectorMode.index then
+        selector.on_tick = IndexMode.on_tick
+    elseif mode == SelectorMode.count_inputs then
+        selector.on_tick = CountInputsMode.on_tick
+    elseif mode == SelectorMode.random_input then
+        selector.on_tick = RandomInputMode.on_tick
+    elseif mode == SelectorMode.stack_size then
+        selector.on_tick = StackSizeMode.on_tick
+    elseif mode == SelectorMode.quality_transfer then
+        selector.on_tick = QualityTransferMode.on_tick
+    else
+        game.print("Selector combinator: mode unrecognized: " .. mode)
+    end
+end
+
+-- Have a Selector set its sort function based on its mode
+---@param selector Selector
+local function set_sort_function(selector)
+    if selector.settings.index_order == "ascending" then
+        selector.cache.sort = function(a, b) return a.count < b.count end
+    else
+        selector.cache.sort = function(a, b) return a.count > b.count end
+    end
+end
+
+-- Set up all functions stored within Selectors.
+-- Factorio does not preserve functions in a mod's global table.
+function SelectorRuntime.set_functions()
+    for _, selector in pairs(global.selector_combinators) do
+        set_on_tick_function(selector)
+        set_sort_function(selector)
+    end
+end
+
 -- Reset the caches of a selector and force an update.
 -- Trigger this whenever we migrate, change anything in the Selector GUI, or paste settings.
 -- By doing this work only when settings change, we minimize the work required in each on_tick.
@@ -145,10 +185,8 @@ function SelectorRuntime.clear_caches_and_force_update(selector)
     selector.cache = {}
     selector.control_behavior.parameters = nil
 
-    -- 2. Detect the mode, set our cached on_tick hander, and create the caches we need
+    -- 2. Detect the mode and create the caches we need
     if selector.settings.mode == SelectorMode.index then
-        selector.on_tick = IndexMode.on_tick
-
         selector.cache.old_inputs = {}
 
         if selector.settings.index_order == "ascending" then
@@ -157,9 +195,9 @@ function SelectorRuntime.clear_caches_and_force_update(selector)
             selector.cache.sort = function(a, b) return a.count > b.count end
         end
 
-    elseif selector.settings.mode == SelectorMode.count_inputs then
-        selector.on_tick = CountInputsMode.on_tick
+        set_sort_function(selector)
 
+    elseif selector.settings.mode == SelectorMode.count_inputs then
         selector.cache.input_count = 0
 
         if selector.settings.count_signal then
@@ -170,22 +208,15 @@ function SelectorRuntime.clear_caches_and_force_update(selector)
             }}
         end
 
-    elseif selector.settings.mode == SelectorMode.random_input then
-        selector.on_tick = RandomInputMode.on_tick
-
     elseif selector.settings.mode == SelectorMode.stack_size then
-        selector.on_tick = StackSizeMode.on_tick
-
         selector.cache.old_inputs = {}
 
-    elseif selector.settings.mode == SelectorMode.quality_transfer then
-        selector.on_tick = QualityTransferMode.on_tick
-
-    else
-        game.print("Selector combinator: mode unrecognized: " .. selector.settings.mode)
     end
 
-    -- 3. Update this combinator
+    -- 3. Set this selector's tick function based on its mode
+    set_on_tick_function(selector)
+
+    -- 4. Update this combinator
     selector:on_tick()
 end
 

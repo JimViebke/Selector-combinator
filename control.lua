@@ -144,7 +144,16 @@ script.on_event(defines.events.on_gui_opened, on_gui_opened)
 script.on_event(defines.events.on_gui_closed, on_gui_closed)
 
 -- Update Event
+functions_set_up = false
 script.on_event(defines.events.on_tick, function()
+    -- It's icky to check for this at runtime, but functions do not persist in global,
+    -- and we cannot modify global in on_load(). It's still faster than having every
+    -- combinator check its mode within a unified on_tick().
+    if not functions_set_up then
+        SelectorRuntime.set_functions()
+        functions_set_up = true
+    end
+
     for _, selector in pairs(global.selector_combinators) do
         selector:on_tick()
     end
