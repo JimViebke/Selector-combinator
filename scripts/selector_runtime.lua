@@ -58,7 +58,7 @@ function SelectorRuntime.add_combinator(event)
     -- Create the invisible output constant combinator
     local output_entity = assert(
         entity.surface.create_entity {
-            name = "selector-out-combinator",
+            name = Constants.combinator_output_name,
             position = entity.position,
             force = entity.force,
             fast_replace = false,
@@ -112,7 +112,7 @@ function SelectorRuntime.add_combinator(event)
         cache = nil,
     }
 
-    local tags = event.tags and event.tags["selector-combinator"] or nil
+    local tags = event.tags and event.tags[Constants.combinator_name] or nil
     if (type(tags) == "table") then
         selector.settings = util.table.deepcopy(tags)
     end

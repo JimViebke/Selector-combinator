@@ -7,7 +7,7 @@ local COMBINATOR_SHADOW = "__base__/graphics/entity/combinator/arithmetic-combin
 local COMBINATOR_HR_SHADOW = "__base__/graphics/entity/combinator/hr-arithmetic-combinator-shadow.png"
 
 local selector_entity = dataUtil.copy_prototype(data.raw["arithmetic-combinator"]["arithmetic-combinator"],
-    "selector-combinator")
+    Constants.combinator_name)
 selector_entity.icon = "__selector-combinator__/graphics/selector-combinator-icon.png"
 
 local function combinator_sprite(x, hr_x)
@@ -150,7 +150,7 @@ selector_entity.minus_symbol_sprites = combinator_display(45, 0, vertical_shift,
 selector_entity.modulo_symbol_sprites = combinator_display(60, 0, vertical_shift, horizontal_shift)
 
 local selector_out_entity = dataUtil.copy_prototype(data.raw["constant-combinator"]["constant-combinator"],
-    "selector-out-combinator")
+    Constants.combinator_output_name)
 selector_out_entity.icon = nil
 selector_out_entity.icon_size = nil
 selector_out_entity.icon_mipmaps = nil
