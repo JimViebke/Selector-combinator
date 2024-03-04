@@ -71,9 +71,10 @@ function SelectorRuntime.add_combinator(event)
 
     -- Create a control behavior so that the output combinator can have signals set on it.
     ---@class LuaConstantCombinatorControlBehavior
-    local control_behavior = assert(output_entity.get_or_create_control_behavior(), "Failed to get/create control behavior")
+    local control_behavior = assert(output_entity.get_or_create_control_behavior(),
+        "Failed to get/create control behavior")
 
-    -- Connect the output entity to the outputs of the selector combinator, so that the outputs are connected 
+    -- Connect the output entity to the outputs of the selector combinator, so that the outputs are connected
     -- parallel with the actual outputs of the selector combinator.
     entity.connect_neighbour {
         wire = defines.wire_type.red,
@@ -196,21 +197,18 @@ function SelectorRuntime.clear_caches_and_force_update(selector)
         end
 
         set_sort_function(selector)
-
     elseif selector.settings.mode == SelectorMode.count_inputs then
         selector.cache.input_count = 0
 
         if selector.settings.count_signal then
-            selector.cache.output = {{
+            selector.cache.output = { {
                 signal = selector.settings.count_signal,
                 -- Don't set .count; it will be written before we ever output it.
                 index = 1
-            }}
+            } }
         end
-
     elseif selector.settings.mode == SelectorMode.stack_size then
         selector.cache.old_inputs = {}
-
     end
 
     -- 3. Set this selector's tick function based on its mode

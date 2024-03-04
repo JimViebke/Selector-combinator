@@ -17,7 +17,8 @@ local function write_text_boxes(entry, gui)
     local options_flow = gui.inner_frame.options_flow
 
     local select_index_constant = options_flow.select_index_control_flow.select_index_select_flow.select_index_constant
-    local random_input_update_interval_textfield = options_flow.random_input_update_interval_flow.random_input_update_interval_textfield
+    local random_input_update_interval_textfield = options_flow.random_input_update_interval_flow
+        .random_input_update_interval_textfield
 
     select_index_constant.text = tostring(entry.settings.index_constant)
     random_input_update_interval_textfield.text = tostring(entry.settings.interval)
@@ -110,7 +111,7 @@ function SelectorGui.on_gui_added(player, entity)
         name = "title",
         style = "frame_title",
         ignored_by_interaction = true,
-        caption = {"selector-gui.title"},
+        caption = { "selector-gui.title" },
     }
 
     title_bar.add {
@@ -199,11 +200,11 @@ function SelectorGui.on_gui_added(player, entity)
         type = "radiobutton",
         name = "select_index_button",
         state = false,
-        caption = {"", {"selector-gui.select-input"}, " [img=info]"},
-        tooltip = {"selector-gui.select-input-tooltip"},
+        caption = { "", { "selector-gui.select-input" }, " [img=info]" },
+        tooltip = { "selector-gui.select-input-tooltip" },
     }
 
-    select_index_button.style.font_color = {255, 230, 192}
+    select_index_button.style.font_color = { 255, 230, 192 }
     select_index_button.style.font = "heading-3"
 
     local select_index_control_flow = options_flow.add {
@@ -226,14 +227,14 @@ function SelectorGui.on_gui_added(player, entity)
         name = "select_index_signal",
         style = "slot_button_in_shallow_frame",
         elem_type = "signal",
-        signal = {type = "virtual", name = nil},
-        caption = {"selector-gui.select-input-index"},
+        signal = { type = "virtual", name = nil },
+        caption = { "selector-gui.select-input-index" },
     }
 
     select_index_select_flow.add {
         type = "label",
         name = "or_signal",
-        caption = {"selector-gui.or"},
+        caption = { "selector-gui.or" },
     }
 
     local select_index_constant = select_index_select_flow.add {
@@ -261,11 +262,11 @@ function SelectorGui.on_gui_added(player, entity)
         name = "select_index_switch",
         allow_none_state = false,
         switch_state = "left",
-        left_label_caption = {"selector-gui.select-input-sort-descending"},
-        right_label_caption = {"selector-gui.select-input-sort-ascending"},
+        left_label_caption = { "selector-gui.select-input-sort-descending" },
+        right_label_caption = { "selector-gui.select-input-sort-ascending" },
     }
 
-    local line_1 =  options_flow.add {
+    local line_1 = options_flow.add {
         type = "line",
         style = "line",
     }
@@ -284,11 +285,11 @@ function SelectorGui.on_gui_added(player, entity)
         type = "radiobutton",
         name = "count_inputs_button",
         state = false,
-        caption = {"", {"selector-gui.count-inputs"}, " [img=info]"},
-        tooltip = {"selector-gui.count-inputs-tooltip"},
+        caption = { "", { "selector-gui.count-inputs" }, " [img=info]" },
+        tooltip = { "selector-gui.count-inputs-tooltip" },
     }
 
-    count_input_button.style.font_color = {255, 230, 192}
+    count_input_button.style.font_color = { 255, 230, 192 }
     count_input_button.style.font = "heading-3"
 
     local count_inputs_signal = options_flow.add {
@@ -296,10 +297,10 @@ function SelectorGui.on_gui_added(player, entity)
         name = "count_inputs_signal",
         style = "slot_button_in_shallow_frame",
         elem_type = "signal",
-        signal = {type = "virtual", name = nil},
+        signal = { type = "virtual", name = nil },
     }
 
-    local line_2 =  options_flow.add {
+    local line_2 = options_flow.add {
         type = "line",
         style = "line",
     }
@@ -320,11 +321,11 @@ function SelectorGui.on_gui_added(player, entity)
         type = "radiobutton",
         name = "random_input_button",
         state = false,
-        caption = {"", {"selector-gui.random-input"}, " [img=info]"},
-        tooltip = {"selector-gui.random-input-tooltip"},
+        caption = { "", { "selector-gui.random-input" }, " [img=info]" },
+        tooltip = { "selector-gui.random-input-tooltip" },
     }
 
-    random_input_button.style.font_color = {255, 230, 192}
+    random_input_button.style.font_color = { 255, 230, 192 }
     random_input_button.style.font = "heading-3"
 
     local random_input_update_interval_flow = options_flow.add {
@@ -338,7 +339,7 @@ function SelectorGui.on_gui_added(player, entity)
     random_input_update_interval_flow.add {
         type = "label",
         name = "random_input_update_interval_label",
-        caption = {"selector-gui.random-input-update-interval"},
+        caption = { "selector-gui.random-input-update-interval" },
     }
 
     local random_text = random_input_update_interval_flow.add {
@@ -353,7 +354,7 @@ function SelectorGui.on_gui_added(player, entity)
 
     random_text.style.width = 50
 
-    local line_3 =  options_flow.add {
+    local line_3 = options_flow.add {
         type = "line",
         style = "line",
     }
@@ -374,14 +375,14 @@ function SelectorGui.on_gui_added(player, entity)
         type = "radiobutton",
         name = "stack_size_button",
         state = false,
-        caption = {"", {"selector-gui.stack-size"}, " [img=info]"},
-        tooltip = {"selector-gui.stack-size-tooltip"},
+        caption = { "", { "selector-gui.stack-size" }, " [img=info]" },
+        tooltip = { "selector-gui.stack-size-tooltip" },
     }
 
-    stack_size_button.style.font_color = {255, 230, 192}
+    stack_size_button.style.font_color = { 255, 230, 192 }
     stack_size_button.style.font = "heading-3"
 
-    local line_4 =  options_flow.add {
+    local line_4 = options_flow.add {
         type = "line",
         style = "line",
     }
@@ -402,11 +403,11 @@ function SelectorGui.on_gui_added(player, entity)
         type = "radiobutton",
         name = "quality_transfer_button",
         state = false,
-        caption = {"", {"selector-gui.quality-transfer"}, " [img=info]"},
-        tooltip = {"selector-gui.quality-transfer-tooltip"},
+        caption = { "", { "selector-gui.quality-transfer" }, " [img=info]" },
+        tooltip = { "selector-gui.quality-transfer-tooltip" },
     }
 
-    quality_transfer_button.style.font_color = {255, 230, 192}
+    quality_transfer_button.style.font_color = { 255, 230, 192 }
     quality_transfer_button.style.font = "heading-3"
 
     local quality_selection_signal_flow = options_flow.add {
@@ -422,13 +423,13 @@ function SelectorGui.on_gui_added(player, entity)
         name = "quality_selection_signal",
         style = "slot_button_in_shallow_frame",
         elem_type = "signal",
-        signal = {type = "virtual", name = nil},
+        signal = { type = "virtual", name = nil },
     }
 
     local quality_selection_signal_label = quality_selection_signal_flow.add {
         type = "label",
         name = "quality_selection_signal_label",
-        caption = {"selector-gui.quality-selection-signal"},
+        caption = { "selector-gui.quality-selection-signal" },
     }
 
     quality_selection_signal_label.style.left_margin = 8
@@ -446,13 +447,13 @@ function SelectorGui.on_gui_added(player, entity)
         name = "quality_target_signal",
         style = "slot_button_in_shallow_frame",
         elem_type = "signal",
-        signal = {type = "virtual", name = nil},
+        signal = { type = "virtual", name = nil },
     }
 
     local quality_target_signal_label = quality_target_signal_flow.add {
         type = "label",
         name = "quality_target_signal_label",
-        caption = {"selector-gui.quality-target-signal"},
+        caption = { "selector-gui.quality-target-signal" },
     }
 
     quality_target_signal_label.style.left_margin = 8
@@ -644,8 +645,10 @@ function SelectorGui.bind_all_events()
 
         local options_flow = gui.inner_frame.options_flow
 
-        local select_index_constant = options_flow.select_index_control_flow.select_index_select_flow.select_index_constant
-        local random_input_update_interval_textfield = options_flow.random_input_update_interval_flow.random_input_update_interval_textfield
+        local select_index_constant = options_flow.select_index_control_flow.select_index_select_flow
+            .select_index_constant
+        local random_input_update_interval_textfield = options_flow.random_input_update_interval_flow
+            .random_input_update_interval_textfield
 
         if eventData.element == select_index_constant then
             selector_entry.settings.index_constant = tonumber(eventData.element.text) or 0

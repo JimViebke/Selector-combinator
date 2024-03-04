@@ -34,7 +34,7 @@ local function on_entity_settings_pasted(event)
     destination.settings = util.table.deepcopy(source.settings)
 
     SelectorAppearance.update_combinator_appearance(destination)
-    
+
     -- Get this selector into its running state
     SelectorRuntime.clear_caches_and_force_update(destination)
 end
@@ -122,8 +122,8 @@ end
 SelectorGui.bind_all_events()
 
 -- Added Events
-script.on_event(defines.events.on_built_entity, on_added, {selector_filter})
-script.on_event(defines.events.on_robot_built_entity, on_added, {selector_filter})
+script.on_event(defines.events.on_built_entity, on_added, { selector_filter })
+script.on_event(defines.events.on_robot_built_entity, on_added, { selector_filter })
 
 -- Paste events
 script.on_event(defines.events.on_entity_settings_pasted, on_entity_settings_pasted)
@@ -132,9 +132,9 @@ script.on_event(defines.events.on_entity_settings_pasted, on_entity_settings_pas
 script.on_event(defines.events.on_player_setup_blueprint, on_player_setup_blueprint)
 
 -- Removed Events
-script.on_event(defines.events.on_player_mined_entity, on_entity_destroyed, {selector_filter})
-script.on_event(defines.events.on_robot_mined_entity, on_entity_destroyed, {selector_filter})
-script.on_event(defines.events.script_raised_destroy, on_entity_destroyed, {selector_filter})
+script.on_event(defines.events.on_player_mined_entity, on_entity_destroyed, { selector_filter })
+script.on_event(defines.events.on_robot_mined_entity, on_entity_destroyed, { selector_filter })
+script.on_event(defines.events.script_raised_destroy, on_entity_destroyed, { selector_filter })
 
 -- *Special* Removed Events
 script.on_event(defines.events.on_entity_destroyed, on_destroyed)

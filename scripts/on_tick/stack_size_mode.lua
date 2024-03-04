@@ -27,7 +27,7 @@ function StackSizeMode:on_tick()
     end
 
     local old_inputs = cache.old_inputs
-    for i=1, #input_signals do
+    for i = 1, #input_signals do
         local name = input_signals[i].signal.name
         if name ~= old_inputs[i] then
             -- correct mismatch, flag mismatch, and continue comparing

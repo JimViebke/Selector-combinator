@@ -50,7 +50,7 @@ function QualityTransferMode:on_tick()
     end
 
     cache.previous_input_was_nil = false
-    
+
     local quality_selection_signal = settings.quality_selection_signal
 
     if not quality_selection_signal then
@@ -68,10 +68,13 @@ function QualityTransferMode:on_tick()
     local selection_name_stripped = without_quality_suffix(quality_selection_signal.name)
     local target_name_stripped = without_quality_suffix(quality_target_signal.name)
 
-    local red_network = self.input_entity.get_circuit_network(defines.wire_type.red, defines.circuit_connector_id.combinator_input)
-    local green_network = self.input_entity.get_circuit_network(defines.wire_type.green, defines.circuit_connector_id.combinator_input)
+    local red_network = self.input_entity.get_circuit_network(defines.wire_type.red,
+        defines.circuit_connector_id.combinator_input)
+    local green_network = self.input_entity.get_circuit_network(defines.wire_type.green,
+        defines.circuit_connector_id.combinator_input)
 
-    local selection_suffix = first_suffix_of(red_network, green_network, selection_name_stripped, quality_selection_signal.type)
+    local selection_suffix = first_suffix_of(red_network, green_network, selection_name_stripped,
+        quality_selection_signal.type)
 
     if not selection_suffix then
         self.control_behavior.parameters = nil
@@ -142,11 +145,11 @@ function QualityTransferMode:on_tick()
                 type = quality_target_signal.type,
             }
 
-            self.control_behavior.parameters = {{
-                    signal = signal,
-                    count = total_of_input,
-                    index = 1
-                }}
+            self.control_behavior.parameters = { {
+                signal = signal,
+                count = total_of_input,
+                index = 1
+            } }
         end
     end
 end
