@@ -608,8 +608,8 @@ function SelectorGui.bind_all_events()
         }
 
         if game.active_mods[Mods.janky_quality_name] then
-            quality_selection = options_flow.quality_selection_signal_flow.quality_selection_signal
-            quality_target = options_flow.quality_target_signal_flow.quality_target_signal
+            selection_signal_guis.quality_selection = options_flow.quality_selection_signal_flow.quality_selection_signal
+            selection_signal_guis.quality_target = options_flow.quality_target_signal_flow.quality_target_signal
         end
 
         local element = eventData.element
