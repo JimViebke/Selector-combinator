@@ -1,5 +1,6 @@
 local SelectorAppearance = require("scripts.selector_appearance")
 local SelectorRuntime = require("scripts.selector_runtime")
+local Util = require("scripts.util")
 
 local SelectorGui = {}
 
@@ -494,10 +495,17 @@ function SelectorGui.on_gui_removed(player)
     end
 end
 
-local function is_logic_signal(signal)
-    if signal and (signal.name == "signal-anything" or signal.name == "signal-each" or signal.name == "signal-everything") then
+local function is_logic_signal_name(name)
+    if not name then return false end
+
+    -- Search within the name, because we also want to detect the quality
+    -- versions of the signal created by Janky quality.
+    if string.find(name, "signal-anything", 1, true) or
+        string.find(name, "signal-each", 1, true) or
+        string.find(name, "signal-everything", 1, true) then
         return true
     end
+
     return false
 end
 
@@ -616,7 +624,10 @@ function SelectorGui.bind_all_events()
 
         if eventData.element == selection_signal_guis.select_index then
             local signal = eventData.element.elem_value
-            if is_logic_signal(signal) then
+            if signal and is_logic_signal_name(signal.name) then
+                player.create_local_flying_text{
+                        text = { "", "Cannot use a virtual logic signal here." },
+                        create_at_cursor = true}
                 eventData.element.elem_value = nil
                 signal = nil
             end
@@ -625,7 +636,10 @@ function SelectorGui.bind_all_events()
 
         if eventData.element == selection_signal_guis.count_inputs then
             local signal = eventData.element.elem_value
-            if is_logic_signal(signal) then
+            if signal and is_logic_signal_name(signal.name) then
+                player.create_local_flying_text{
+                        text = { "", "Cannot use a virtual logic signal here." },
+                        create_at_cursor = true}
                 eventData.element.elem_value = nil
                 signal = nil
             end
@@ -633,12 +647,48 @@ function SelectorGui.bind_all_events()
         end
 
         if game.active_mods[Mods.janky_quality_name] then
-            if eventData.element == selection_signal_guis.quality_selection then
-                selector_entry.settings.quality_selection_signal = eventData.element.elem_value
-            end
+            -- Handle these together modes together - the logic is almost identical
+            if eventData.element == selection_signal_guis.quality_selection or
+                eventData.element == selection_signal_guis.quality_target then
+                local signal = eventData.element.elem_value
+                if signal then
+                    local name_with_suffix
+                    -- Quality transfer ignores the quality of the chosen signal, so make things clearer for the user
+                    -- by making sure the signal in the GUI is always of the base quality
+                    if Util.signal_name_has_suffix(signal.name) then
+                        name_with_suffix = signal.name
+                        signal.name = Util.without_quality_suffix(signal.name)
+                        eventData.element.elem_value = signal
+                    else
+                        name_with_suffix = signal.name .. "-quality-2"
+                    end
 
-            if eventData.element == selection_signal_guis.quality_target then
-                selector_entry.settings.quality_target_signal = eventData.element.elem_value
+                    -- If the signal is a logic signal
+                    --     Reject it, unless it is signal-each for the quality target
+                    -- Elseif the signal is neither a recognized item or virtual signal
+                    --     Reject it
+                    if is_logic_signal_name(signal.name) then
+                        if not (signal.name == "signal-each" and eventData.element == selection_signal_guis.quality_target) then
+                            player.create_local_flying_text{
+                                    text = { "", signal.name .. " cannot be used here." },
+                                    create_at_cursor = true}
+                            signal = nil
+                            eventData.element.elem_value = signal
+                        end
+                    elseif not Util.is_real_signal(name_with_suffix) then
+                        player.create_local_flying_text{
+                                text = { "", signal.name .. " cannot have a quality." },
+                                create_at_cursor = true}
+                        signal = nil
+                        eventData.element.elem_value = signal
+                    end
+                end
+
+                if eventData.element == selection_signal_guis.quality_selection then
+                    selector_entry.settings.quality_selection_signal = signal
+                else
+                    selector_entry.settings.quality_target_signal = signal
+                end
             end
         end
 

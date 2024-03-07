@@ -1,14 +1,6 @@
+local Util = require("scripts.util")
+
 local QualityTransferMode = {}
-
-local function without_quality_suffix(name)
-    local end_of_name = string.find(name, "-quality-")
-
-    if end_of_name then
-        return string.sub(name, 1, end_of_name - 1)
-    else
-        return name
-    end
-end
 
 local suffixes = {
     [1] = "",
@@ -19,6 +11,8 @@ local suffixes = {
 }
 
 local function first_suffix_of(red_network, green_network, stripped_name, signal_type)
+    if not Util.is_real_signal(stripped_name .. suffixes[2]) then return end
+
     for _, suffix in ipairs(suffixes) do
         local search_signal = {
             name = stripped_name .. suffix,
@@ -69,8 +63,8 @@ function QualityTransferMode:on_tick()
 
     -- Get the base signal name of the selection and target signals. ie "iron-gear-wheel-quality-4" ==> "iron-gear-wheel"
     -- We never actually use the qualities of the input signals, so we could just change the input signal whenever it's entered in the GUI.
-    local selection_name_stripped = without_quality_suffix(quality_selection_signal.name)
-    local target_name_stripped = without_quality_suffix(quality_target_signal.name)
+    local selection_name_stripped = Util.without_quality_suffix(quality_selection_signal.name)
+    local target_name_stripped = Util.without_quality_suffix(quality_target_signal.name)
 
     local red_network = self.input_entity.get_circuit_network(defines.wire_type.red,
         defines.circuit_connector_id.combinator_input)
@@ -96,7 +90,7 @@ function QualityTransferMode:on_tick()
 
         for _, signal in pairs(input_signals) do
             -- If the signal is the selection signal, skip it.
-            local signal_name_stripped = without_quality_suffix(signal.signal.name)
+            local signal_name_stripped = Util.without_quality_suffix(signal.signal.name)
 
             if not (signal_name_stripped == selection_name_stripped) then
                 local current_value = output_values[signal_name_stripped]
@@ -111,56 +105,69 @@ function QualityTransferMode:on_tick()
         end
 
         local parameters = {}
-
         local counter = 1
 
         for name, value in pairs(output_values) do
-            local signal = {
-                name = name .. selection_suffix,
-                type = output_types[name],
-            }
+            local name_with_suffix = name .. selection_suffix
+            if Util.is_real_signal(name_with_suffix) then
+                local signal = {
+                    name = name_with_suffix,
+                    type = output_types[name],    
+                }
 
-            table.insert(parameters, {
-                signal = signal,
-                count = value,
-                index = counter
-            })
-
-            counter = counter + 1
+                table.insert(parameters, {
+                    signal = signal,
+                    count = value,
+                    index = counter
+                })
+                
+                counter = counter + 1
+            end
         end
 
         self.control_behavior.parameters = parameters
     else
         local total_of_input = 0
 
-        -- Find the total input count of the target signal, for all input qualities of the signal.
-        -- ie, if we have 200 of "stone-wall", 300 of "stone-wall-quality-2", and 100 of "stone-wall-quality-5", total_of_input = 600.
-        for _, prefix in ipairs(suffixes) do
-            local search_signal = {
-                name = target_name_stripped .. prefix,
-                type = quality_target_signal.type,
-            }
+        -- Make sure that the signal actually exists. Not all signals have quality variants.
+        -- However, assume that if one quality variant exists (ie, "signal-name-quality-2"), then all variants are valid.
+        if Util.is_real_signal(target_name_stripped .. suffixes[2]) then
+            -- Find the total input count of the target signal, for all input qualities of the signal.
+            -- ie, if we have 200 of "stone-wall", 300 of "stone-wall-quality-2", and 100 of "stone-wall-quality-5", total_of_input = 600.
+            for _, prefix in ipairs(suffixes) do
+                local search_signal = {
+                    name = target_name_stripped .. prefix,
+                    type = quality_target_signal.type,
+                }
 
-            local red_signal = red_network and red_network.get_signal(search_signal) or 0
-            local green_signal = green_network and green_network.get_signal(search_signal) or 0
+                local red_signal = red_network and red_network.get_signal(search_signal) or 0
+                local green_signal = green_network and green_network.get_signal(search_signal) or 0
 
-            total_of_input = total_of_input + red_signal + green_signal
+                total_of_input = total_of_input + red_signal + green_signal
+            end
         end
 
         if total_of_input == 0 then
             self.control_behavior.parameters = nil
         else
             -- Output the sum of the target signal, with the lowest quality of the selection signal.
-            local signal = {
-                name = target_name_stripped .. selection_suffix,
-                type = quality_target_signal.type,
-            }
 
-            self.control_behavior.parameters = { {
-                signal = signal,
-                count = total_of_input,
-                index = 1
-            } }
+            -- Make sure that the signal actually exists.
+            local name = target_name_stripped .. selection_suffix
+            if Util.is_real_signal(name) then
+                local signal = {
+                    name = name,
+                    type = quality_target_signal.type,
+                }
+
+                self.control_behavior.parameters = { {
+                    signal = signal,
+                    count = total_of_input,
+                    index = 1
+                } }
+            else
+                self.control_behavior.parameters = nil
+            end
         end
     end
 end
