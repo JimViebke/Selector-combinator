@@ -86,7 +86,7 @@ function IndexMode:on_tick()
         self.control_behavior.parameters = nil
         return
     else -- The index is valid and greater than 1, we must sort
-        table.sort(input_signals, cache.sort)
+        table.sort(input_signals, cache.sort) -- We can use a heap here, poping `index` values from it. It can be faster than sorting (especially for low indeces with many signals)
         signal = input_signals[index]
     end
 
