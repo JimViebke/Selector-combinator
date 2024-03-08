@@ -25,6 +25,11 @@ function IndexMode:on_tick()
     local old_inputs = cache.old_inputs
     local n_input_signals = #input_signals
 
+    -- 0. If we are indexing for 0th element, it is faster to just retrieve it.
+    if not index_signal and settings.index_constant == 0 then
+        return get_0th_signal()
+    end
+
     -- 1. Check to see if our inputs are unchanged.
     if n_input_signals == #old_inputs then
         local inputs_match = true
@@ -72,23 +77,7 @@ function IndexMode:on_tick()
 
     -- 3. Select the n-th signal, optimizing for the common cases of searching for min or max.
     if index == 1 then
-        signal = input_signals[1]
-        local count = signal.count
-        if settings.index_order == "ascending" then
-            for _, v in pairs(input_signals) do
-                if v.count < count then
-                    signal = v
-                    count = v.count
-                end
-            end
-        else
-            for _, v in pairs(input_signals) do
-                if v.count > count then
-                    signal = v
-                    count = v.count
-                end
-            end
-        end
+        signal, count = get_0th_signal()
     elseif index < 1 or index > n_input_signals then
         -- The input signal is out of bounds, clear the cache and the output
         cache.old_output_name = nil
@@ -109,6 +98,25 @@ function IndexMode:on_tick()
             count = signal.count,
             index = 1
         } }
+    end
+end
+
+function get_0th_signal()
+    signal = input_signals[1]
+local count = signal.count
+if settings.index_order == "ascending" then
+    for _, v in pairs(input_signals) do
+        if v.count < count then
+            signal = v
+            count = v.count
+        end
+    end
+else
+    for _, v in pairs(input_signals) do
+        if v.count > count then
+            signal = v
+            count = v.count
+        end
     end
 end
 
