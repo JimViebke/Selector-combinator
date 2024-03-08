@@ -27,7 +27,8 @@ function IndexMode:on_tick()
 
     -- 0. If we are indexing for 0th element, it is faster to just retrieve it.
     if not index_signal and settings.index_constant == 0 then
-        return get_0th_signal()
+        local signal, count = get_0th_signal()
+        goto update_output
     end
 
     -- 1. Check to see if our inputs are unchanged.
@@ -89,6 +90,7 @@ function IndexMode:on_tick()
         signal = input_signals[index]
     end
 
+    ::update_output:: -- kill this and move each step to a different function so we can avoid using goto?
     -- 4. Update our output if we need to.
     if cache.old_output_count ~= signal.count or cache.old_output_name ~= signal.signal.name then
         cache.old_output_name = signal.signal.name
@@ -103,21 +105,23 @@ end
 
 function get_0th_signal()
     signal = input_signals[1]
-local count = signal.count
-if settings.index_order == "ascending" then
-    for _, v in pairs(input_signals) do
-        if v.count < count then
-            signal = v
-            count = v.count
+    local count = signal.count
+    if settings.index_order == "ascending" then
+        for _, v in pairs(input_signals) do
+            if v.count < count then
+                signal = v
+                count = v.count
+            end
+        end
+    else
+        for _, v in pairs(input_signals) do
+            if v.count > count then
+                signal = v
+                count = v.count
+            end
         end
     end
-else
-    for _, v in pairs(input_signals) do
-        if v.count > count then
-            signal = v
-            count = v.count
-        end
-    end
+    return signal, count
 end
 
 return IndexMode
