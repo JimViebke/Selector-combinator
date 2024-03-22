@@ -128,10 +128,11 @@ end
 
 function SelectorRuntime.remove_combinator(unit_number)
     local selector = global.selector_combinators[unit_number]
+    if not selector then return end
 
     global.selector_combinators[unit_number] = nil
 
-    if selector and selector.output_entity then
+    if selector.output_entity then
         selector.output_entity.destroy()
     end
 end
