@@ -6,9 +6,14 @@ if not global.rng then
     global.rng = game.create_random_generator()
 end
 
+-- Enable the Selector combinator recipe if the circuit network has already been researched
+for _, force in pairs(game.forces) do
+    force.recipes[Constants.combinator_name].enabled = force.technologies["circuit-network"].researched
+end
+
 if global.selector_combinators then
     for _, selector in pairs(global.selector_combinators) do
-        -- move copyable settings from selector to selector.settings
+        -- Move copyable settings from selector to selector.settings
         if not selector.settings then
             selector.settings = {}
 
