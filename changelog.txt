@@ -1,5 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.1
+Date: 2024-03-22
+
+  Bugfixes:
+    - Fixed recipe not being unlocked if the circuit network was already researched.
+
+---------------------------------------------------------------------------------------------------
 Version: 0.1.0
 Date: 2024-03-07
+
   Features:
     - Initial release.
