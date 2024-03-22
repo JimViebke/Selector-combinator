@@ -25,6 +25,12 @@ function IndexMode:on_tick()
     local old_inputs = cache.old_inputs
     local n_input_signals = #input_signals
 
+    -- 0. If we are indexing for 0th element, it is faster to just retrieve it.
+    if not index_signal and settings.index_constant == 0 then
+        local signal, count = get_0th_signal()
+        goto update_output
+    end
+
     -- 1. Check to see if our inputs are unchanged.
     if n_input_signals == #old_inputs then
         local inputs_match = true
@@ -72,23 +78,7 @@ function IndexMode:on_tick()
 
     -- 3. Select the n-th signal, optimizing for the common cases of searching for min or max.
     if index == 1 then
-        signal = input_signals[1]
-        local count = signal.count
-        if settings.index_order == "ascending" then
-            for _, v in pairs(input_signals) do
-                if v.count < count then
-                    signal = v
-                    count = v.count
-                end
-            end
-        else
-            for _, v in pairs(input_signals) do
-                if v.count > count then
-                    signal = v
-                    count = v.count
-                end
-            end
-        end
+        signal, count = get_0th_signal()
     elseif index < 1 or index > n_input_signals then
         -- The input signal is out of bounds, clear the cache and the output
         cache.old_output_name = nil
@@ -96,10 +86,11 @@ function IndexMode:on_tick()
         self.control_behavior.parameters = nil
         return
     else -- The index is valid and greater than 1, we must sort
-        table.sort(input_signals, cache.sort)
+        table.sort(input_signals, cache.sort) -- We can use a heap here, poping `index` values from it. It can be faster than sorting (especially for low indeces with many signals)
         signal = input_signals[index]
     end
 
+    ::update_output:: -- kill this and move each step to a different function so we can avoid using goto?
     -- 4. Update our output if we need to.
     if cache.old_output_count ~= signal.count or cache.old_output_name ~= signal.signal.name then
         cache.old_output_name = signal.signal.name
@@ -110,6 +101,27 @@ function IndexMode:on_tick()
             index = 1
         } }
     end
+end
+
+function get_0th_signal()
+    signal = input_signals[1]
+    local count = signal.count
+    if settings.index_order == "ascending" then
+        for _, v in pairs(input_signals) do
+            if v.count < count then
+                signal = v
+                count = v.count
+            end
+        end
+    else
+        for _, v in pairs(input_signals) do
+            if v.count > count then
+                signal = v
+                count = v.count
+            end
+        end
+    end
+    return signal, count
 end
 
 return IndexMode
